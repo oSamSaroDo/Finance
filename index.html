@@ -104,8 +104,6 @@
     window._fbStatus('error');
   });
 </script>
-<!-- SheetJS for Excel export -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Prompt:wght@300;400;500;600;700&display=swap');
@@ -164,7 +162,7 @@ body {
   background: var(--surface);
   padding: 10px 18px 10px;
   display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 100;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
   border-bottom: 2px solid var(--border);
   box-shadow: 0 2px 12px rgba(180,100,120,0.07);
 }
@@ -219,197 +217,313 @@ body {
 @keyframes fbpulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
 /* ══════════════════════════════════════
-   APP SHELL — responsive
+   APP SHELL — base (iPhone)
 ══════════════════════════════════════ */
-.app-shell {
-  display: flex; min-height: 100vh;
+.app-shell { display: flex; min-height: 100vh; flex-direction: column; }
+
+/* ── TOPBAR (iPhone + iPad) ── */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  background: var(--surface);
+  padding: 10px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 2px solid var(--border);
+  box-shadow: 0 2px 12px rgba(180,100,120,0.07);
 }
 
-/* ── BOTTOM NAV (mobile default — <768px) ── */
+/* ── BOTTOM NAV (iPhone + iPad) ── */
 .sidebar {
-  position: fixed; bottom: 0; left: 0; right: 0;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
   background: var(--surface);
   border-top: 2px solid var(--border);
-  z-index: 200; display: flex; align-items: center;
-  padding: 0 6px env(safe-area-inset-bottom,0); height: 62px;
+  display: flex; align-items: center;
+  padding: 0 6px env(safe-area-inset-bottom, 0);
+  height: 66px;
   box-shadow: 0 -4px 20px rgba(180,100,120,0.10);
 }
 .nav-item {
   flex: 1; display: flex; flex-direction: column; align-items: center;
   justify-content: center; gap: 3px; padding: 8px 4px;
-  cursor: pointer; border-radius: 14px; transition: all 0.2s;
+  cursor: pointer; border-radius: 16px; transition: all 0.2s;
   color: var(--ink-soft); border: none; background: transparent;
 }
 .nav-item .nav-icon { width: 22px; height: 22px; }
 .nav-item .nav-label { font-size: 9.5px; font-weight: 700; white-space: nowrap; font-family: 'Nunito', sans-serif; letter-spacing: 0.2px; }
 .nav-item.active { color: var(--rose); background: var(--blush-mist); }
 
-/* ══════════════════════════════════════
-   MAIN
-══════════════════════════════════════ */
-.main { padding: 16px 15px 80px; flex: 1; min-width: 0; }
-.page { display: none; }
-.page.active { display: block; }
-
-/* Hide sidebar elements on mobile */
+/* ── Hide desktop-only elements on mobile ── */
 .sidebar-brand { display: none; }
 .sidebar-fb-wrap { display: none; }
 .sidebar-month-wrap { display: none; }
 .nav-items-wrap { display: contents; }
 .page-titlebar { display: none; }
 
-/* ══════════════════════════════════════
-   TABLET / iPAD (≥768px) — side nav
-══════════════════════════════════════ */
-@media (min-width: 768px) {
-  body { background: var(--bg); }
+/* ── MAIN (iPhone) ── */
+.main { padding: 80px 15px 90px; flex: 1; min-width: 0; }
+.page { display: none; }
+.page.active { display: block; }
 
+/* ══════════════════════════════════════
+   📱 iPAD  (768px – 1179px)
+   Bottom nav + centered 2-col content
+══════════════════════════════════════ */
+@media (min-width: 768px) and (max-width: 1179px) {
+
+  /* Topbar bigger */
+  .topbar { padding: 13px 28px; }
+  .topbar-title { font-size: 21px; }
+  .month-pill { font-size: 13px; padding: 9px 18px; }
+
+  /* Bottom nav — taller touch targets */
+  .sidebar { height: 76px; padding: 0 20px env(safe-area-inset-bottom, 0); }
+  .nav-item { gap: 5px; padding: 10px 12px; border-radius: 18px; }
+  .nav-item .nav-icon { width: 26px; height: 26px; }
+  .nav-item .nav-label { font-size: 11px; }
+
+  /* Main — centered max-width */
+  .main {
+    padding: 92px 28px 106px;
+    max-width: 980px;
+    margin-left: auto; margin-right: auto; width: 100%;
+  }
+
+  /* Hero */
+  .hero-card { padding: 28px 28px 22px; margin-bottom: 20px; }
+  .hero-amount { font-size: 46px; }
+  .hero-stat-icon { width: 44px; height: 44px; }
+  .hero-stat-val { font-size: 17px; }
+
+  /* Overview — hero full-width, cards 2-col */
+  .desktop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px; align-items: start;
+  }
+  .desktop-col-full { grid-column: 1 / -1; }
+
+  /* Transaction — form | list */
+  .tx-desktop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px; align-items: start;
+  }
+
+  /* Fixed Cost — form | list */
+  .fc-desktop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px; align-items: start;
+  }
+
+  /* Planner tabs centered */
+  .ptabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+  .ptab { padding: 10px 26px !important; font-size: 13px !important; border-radius: 22px !important; }
+
+  /* Daily: day-nav full-width, then 2-col */
+  #pv-daily { display: none; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+  #pv-daily.on { display: grid; }
+  #pv-daily .day-nav { grid-column: 1 / -1; }
+
+  /* Weekly / Monthly / Work — single centered col */
+  #pv-weekly, #pv-monthly, #pv-work {
+    max-width: 700px; margin-left: auto; margin-right: auto;
+  }
+
+  /* Cards */
+  .card { margin-bottom: 18px; border-radius: 22px; }
+  .card-header { padding: 16px 20px; }
+  .card-title { font-size: 15px; }
+  .card-body { padding: 18px 20px; }
+
+  /* Forms */
+  input, select, textarea { padding: 14px 16px; font-size: 15px; border-radius: 14px; }
+  .form-col { gap: 13px; }
+  .form-row2 { gap: 10px; }
+
+  /* Buttons */
+  .btn { padding: 15px 22px; font-size: 14px; border-radius: 14px; }
+  .btn-sm { padding: 9px 18px; font-size: 13px; }
+  .btn-ghost { padding: 8px 12px; border-radius: 11px; }
+
+  /* Tx items */
+  .tx-item { padding: 14px 0; gap: 14px; }
+  .tx-icon { width: 48px; height: 48px; border-radius: 15px; }
+  .tx-name { font-size: 15px; }
+  .tx-amt { font-size: 15px; }
+
+  /* Misc */
+  .type-toggle { border-radius: 14px; }
+  .type-btn { padding: 12px; font-size: 13px; }
+  .chip { padding: 7px 16px; font-size: 12.5px; border-radius: 26px; }
+  .task-chk { width: 24px !important; height: 24px !important; min-width: 24px !important; }
+  .task-txt2 { font-size: 14px !important; }
+  .work-item { padding: 14px 16px !important; border-radius: 14px !important; }
+  .wk-day { padding: 10px 6px !important; border-radius: 14px !important; }
+  .wk-dnum { font-size: 16px !important; }
+  .mo-day { min-height: 52px !important; font-size: 14px !important; border-radius: 12px !important; }
+  .fc-item { padding: 13px 0 !important; }
+  .fc-name { font-size: 14px !important; }
+  .fc-amt { font-size: 15px !important; }
+  .pri-badge { font-size: 11px !important; padding: 5px 12px !important; border-radius: 20px !important; }
+  .budget-bar { height: 12px !important; border-radius: 8px !important; }
+  .toast { min-width: 220px; font-size: 14px; padding: 14px 20px; }
+}
+
+/* ══════════════════════════════════════
+   🖥️  PC / Desktop  (≥1180px)
+   Left sidebar + wide content area
+══════════════════════════════════════ */
+@media (min-width: 1180px) {
+
+  /* Hide mobile topbar — sidebar has brand */
   .topbar { display: none; }
 
+  /* App shell = row */
   .app-shell { flex-direction: row; }
 
-  /* ── Sidebar — left rail ── */
+  /* ── LEFT SIDEBAR ── */
   .sidebar {
     position: fixed; top: 0; left: 0; bottom: 0; right: auto;
-    width: 200px; height: 100vh;
-    flex-direction: column; align-items: stretch;
-    justify-content: flex-start;
+    width: 240px; height: 100vh;
+    flex-direction: column; align-items: stretch; justify-content: flex-start;
     border-top: none; border-right: 2px solid var(--border);
     box-shadow: 2px 0 16px rgba(180,100,120,0.08);
     padding: 0; overflow-y: auto;
-    /* smooth scroll inertia on iPad */
-    -webkit-overflow-scrolling: touch;
   }
 
+  /* Brand inside sidebar */
   .sidebar-brand {
     display: flex !important;
     align-items: center; gap: 10px;
-    padding: 20px 16px 14px;
+    padding: 24px 20px 16px;
     border-bottom: 2px solid var(--border);
   }
   .sidebar-logo {
-    width: 38px; height: 38px; border-radius: 12px;
+    width: 42px; height: 42px; border-radius: 14px;
     background: var(--blush-mist); border: 2px solid var(--border);
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; overflow: hidden;
   }
   .sidebar-title {
-    font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800;
+    font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
     color: var(--ink); letter-spacing: -0.5px; line-height: 1;
   }
   .sidebar-title span { color: var(--rose); }
-  .sidebar-sub {
-    font-size: 9px; color: var(--ink-soft); font-weight: 600;
-    letter-spacing: 0.3px; margin-top: 2px;
-  }
+  .sidebar-sub { font-size: 10px; color: var(--ink-soft); font-weight: 600; letter-spacing: 0.3px; margin-top: 2px; }
 
+  /* Month picker in sidebar */
+  .sidebar-month-wrap {
+    display: flex !important;
+    padding: 10px 14px 4px;
+  }
+  .sidebar-month-wrap .month-pill { width: 100%; text-align: center; }
+
+  /* Nav items — vertical list */
   .nav-items-wrap {
-    display: flex; flex-direction: column;
-    gap: 3px; padding: 12px 10px;
-    flex: 1;
+    display: flex !important;
+    flex-direction: column;
+    gap: 4px; padding: 14px 12px; flex: 1;
   }
   .nav-item {
     flex: none; flex-direction: row;
-    justify-content: flex-start; gap: 11px;
-    padding: 11px 13px; border-radius: 12px;
+    justify-content: flex-start; gap: 12px;
+    padding: 12px 16px; border-radius: 14px;
   }
   .nav-item .nav-icon { width: 20px; height: 20px; flex-shrink: 0; }
   .nav-item .nav-label { font-size: 13px; font-weight: 700; }
-  .nav-item.active {
-    background: var(--blush-mist);
-    box-shadow: 0 2px 8px rgba(180,80,110,0.12);
-  }
+  .nav-item.active { background: var(--blush-mist); box-shadow: 0 2px 8px rgba(180,80,110,0.12); }
 
+  /* Firebase status at bottom of sidebar */
   .sidebar-fb-wrap {
     display: flex !important;
-    padding: 10px 12px 16px;
+    padding: 12px 14px 24px;
     border-top: 2px solid var(--border);
   }
   .sidebar-fb-wrap .fb-status { font-size: 11px; }
 
-  .sidebar-month-wrap {
-    display: flex !important;
-    padding: 8px 10px 2px;
-  }
-  .sidebar-month-wrap .month-pill { width: 100%; text-align: center; }
-
-  /* ── Main content ── */
+  /* ── MAIN — offset by sidebar, wide content ── */
   .main {
-    margin-left: 200px;
-    padding: 24px 24px 36px;
-    max-width: 100%;
+    margin-left: 240px;
+    padding: 36px 40px 48px;
+    max-width: none;
+    width: calc(100% - 240px);
   }
 
-  /* ── Page title bar ── */
+  /* Page title bar shows on desktop */
   .page-titlebar {
     display: flex !important;
     align-items: center; justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
   .page-titlebar h2 {
-    font-family: 'Nunito', sans-serif; font-size: 20px; font-weight: 800;
+    font-family: 'Nunito', sans-serif; font-size: 24px; font-weight: 800;
     color: var(--ink); letter-spacing: -0.5px;
   }
 
-  /* ── Hero card ── */
-  .hero-card { padding: 26px 26px 20px; }
-  .hero-amount { font-size: 40px; }
+  /* Hero */
+  .hero-card { padding: 32px 32px 26px; margin-bottom: 22px; }
+  .hero-amount { font-size: 52px; }
 
-  /* ── Overview 2-col grid ── */
+  /* Overview — hero full-width, 3-col cards */
   .desktop-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    align-items: start;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px; align-items: start;
   }
   .desktop-col-full { grid-column: 1 / -1; }
 
-  /* ── Transactions: form | list ── */
+  /* Transaction — fixed form width | list */
   .tx-desktop-grid {
     display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 14px;
-    align-items: start;
+    grid-template-columns: 400px 1fr;
+    gap: 20px; align-items: start;
   }
 
-  /* ── Fixed cost: form | list ── */
+  /* Fixed Cost — fixed form width | list */
   .fc-desktop-grid {
     display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 14px;
-    align-items: start;
+    grid-template-columns: 380px 1fr;
+    gap: 20px; align-items: start;
   }
 
-  /* ── Planner: wider spacing ── */
-  .planner-desktop-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    align-items: start;
+  /* Planner tabs */
+  .ptabs { display: flex; gap: 10px; margin-bottom: 22px; }
+  .ptab { padding: 10px 28px !important; font-size: 13px !important; border-radius: 22px !important; }
+
+  /* Daily: 2-col */
+  #pv-daily { display: none; grid-template-columns: 400px 1fr; gap: 20px; align-items: start; }
+  #pv-daily.on { display: grid; }
+  #pv-daily .day-nav { grid-column: 1 / -1; }
+
+  /* Weekly / Monthly: 2-col (calendar | tasks) */
+  #pv-weekly, #pv-monthly { max-width: none; }
+
+  /* Work: form | list */
+  #pv-work {
+    max-width: none;
+    display: none;
+    grid-template-columns: 380px 1fr;
+    gap: 20px; align-items: start;
   }
+  #pv-work.on { display: grid; }
 
-  /* ── Modal: centre on iPad ── */
-  .modal-sheet {
-    border-radius: 22px;
-    margin-bottom: 40px;
-    max-width: 480px;
-  }
-  .modal-overlay { align-items: center; }
+  /* Cards */
+  .card { margin-bottom: 20px; }
+  .card-header { padding: 14px 20px; }
+  .card-body { padding: 18px 20px; }
 
-  /* ── Toast: above content ── */
-  .toast { bottom: 28px; }
-}
+  /* Forms */
+  input, select, textarea { padding: 12px 14px; font-size: 14px; }
+  .form-col { gap: 12px; }
 
-/* ══════════════════════════════════════
-   iPAD Pro / DESKTOP (≥1100px)
-══════════════════════════════════════ */
-@media (min-width: 1100px) {
-  .sidebar { width: 230px; }
-  .main { margin-left: 230px; padding: 32px 40px 40px; max-width: 1280px; }
-  .desktop-grid { gap: 18px; }
-  .tx-desktop-grid { grid-template-columns: 400px 1fr; gap: 18px; }
-  .fc-desktop-grid { grid-template-columns: 360px 1fr; gap: 18px; }
-  .hero-amount { font-size: 46px; }
+  /* Buttons */
+  .btn { padding: 13px 22px; font-size: 14px; }
+
+  /* Tx items */
+  .tx-icon { width: 44px; height: 44px; }
+  .tx-name { font-size: 14px; }
+
+  .toast { min-width: 240px; }
 }
 
 /* ══════════════════════════════════════
@@ -834,92 +948,12 @@ textarea { resize: vertical; min-height: 60px; }
 .btn-red { background: var(--red); color: #fff; border: 2px solid #B84040; box-shadow: 0 3px 10px rgba(200,60,60,0.25); }
 .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--ink-mid); font-weight: 700; }
 
-/* ── Data Log table ── */
-.dl-table { width:100%; border-collapse:collapse; font-size:13px; }
-.dl-table th {
-  background:var(--blush-mist); color:var(--ink); font-family:'Nunito',sans-serif;
-  font-weight:800; font-size:12px; padding:10px 14px; text-align:left;
-  border-bottom:2px solid var(--border); white-space:nowrap; position:sticky;top:0;
-}
-.dl-table td {
-  padding:10px 14px; border-bottom:1.5px solid var(--border);
-  color:var(--ink); font-weight:500; vertical-align:middle; white-space:nowrap;
-}
-.dl-table tr:last-child td { border-bottom:none; }
-.dl-table tr:hover td { background:var(--blush-bg); }
-.dl-table .dl-del {
-  width:28px;height:28px;border-radius:7px;border:1.5px solid #F0CCCC;
-  background:var(--red-bg);color:var(--red);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.dl-col-chip {
-  display:flex;align-items:center;gap:6px;padding:4px 10px 4px 12px;
-  border-radius:20px;background:var(--blush-mist);border:1.5px solid var(--border);
-  font-size:11.5px;font-family:'Nunito',sans-serif;font-weight:700;color:var(--ink-mid);
-}
-.dl-col-chip button {
-  background:none;border:none;cursor:pointer;color:var(--red);
-  padding:0;line-height:1;font-size:14px;
-}
-@media (min-width:768px) {
-  #main-datalog { margin-left:200px !important; padding:24px 24px 36px; }
-}
-@media (min-width:1100px) {
-  #main-datalog { margin-left:230px !important; padding:32px 40px 40px; }
-}
+/* ── CAT ICONS INLINE ── */
+.cat-ear-icon { display: inline-block; }
 
 @media (max-width: 360px) {
   .hero-amount { font-size: 28px; }
   .wk-dnum { font-size: 12px; }
-}
-
-/* ══════════════════════════════════════
-   iPAD touch: larger tap targets & spacing
-══════════════════════════════════════ */
-@media (min-width: 768px) and (max-width: 1099px) {
-  /* Bigger touch targets for nav items */
-  .nav-item { padding: 13px 14px; min-height: 48px; }
-
-  /* Cards breathe a bit more */
-  .card-body { padding: 18px 18px; }
-  .card-header { padding: 14px 18px; }
-
-  /* Form fields easier to tap */
-  input, select, textarea { padding: 13px 16px; font-size: 15px; }
-  .btn { padding: 14px 22px; font-size: 14px; min-height: 48px; }
-  .btn-ghost { padding: 8px 12px; }
-  .chip { padding: 7px 14px; font-size: 12px; min-height: 36px; }
-  .type-btn { padding: 12px; min-height: 44px; font-size: 13px; }
-
-  /* Task / tx items easier to tap */
-  .task-item2 { padding: 13px 0; gap: 12px; }
-  .task-chk { width: 26px; height: 26px; }
-  .tx-item { padding: 14px 0; }
-
-  /* Work items */
-  .work-item { padding: 14px; }
-
-  /* Weekly grid bigger cells */
-  .wk-day { padding: 10px 4px; }
-  .wk-dnum { font-size: 16px; }
-
-  /* Month grid bigger */
-  .mo-day { font-size: 14px; border-radius: 10px; }
-
-  /* Planner tabs */
-  .ptab { padding: 9px 18px; font-size: 13px; min-height: 40px; }
-
-  /* Hero card */
-  .hero-amount { font-size: 42px; }
-  .hero-stat-val { font-size: 16px; }
-  .hero-stat-label { font-size: 11px; }
-
-  /* Budget bar */
-  .budget-bar-track { height: 12px; border-radius: 6px; }
-
-  /* Confirm modal */
-  .confirm-title { font-size: 17px; }
-  .confirm-msg { font-size: 14px; }
 }
 </style>
 </head>
@@ -1099,15 +1133,9 @@ textarea { resize: vertical; min-height: 60px; }
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9E8A95" stroke-width="2.5" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           <div class="card-title">รายการทั้งหมด</div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <select id="filterCat" onchange="renderTransactions()" style="width:auto;font-size:12px;padding:5px 10px;background:var(--blush-bg);border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito',sans-serif;font-weight:600;color:var(--ink-mid)">
-            <option value="">ทุกหมวด</option>
-          </select>
-          <button onclick="exportToExcel()" style="display:flex;align-items:center;gap:5px;padding:6px 12px;background:var(--green-bg);border:1.5px solid #C8EDD9;border-radius:9px;font-size:12px;font-family:'Nunito',sans-serif;font-weight:700;color:var(--green);cursor:pointer;white-space:nowrap;transition:all 0.15s" onmouseover="this.style.background='#d4f0e4'" onmouseout="this.style.background='var(--green-bg)'">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Excel
-          </button>
-        </div>
+        <select id="filterCat" onchange="renderTransactions()" style="width:auto;font-size:12px;padding:5px 10px;background:var(--blush-bg);border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito',sans-serif;font-weight:600;color:var(--ink-mid)">
+          <option value="">ทุกหมวด</option>
+        </select>
       </div>
       <div class="card-body" id="txList">
         <div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>ยังไม่มีรายการ</div>
@@ -1287,6 +1315,8 @@ textarea { resize: vertical; min-height: 60px; }
     </div>
 
     <div class="pview" id="pv-work">
+      <!-- Left col: add form -->
+      <div>
       <div class="card">
         <div class="card-header">
           <div class="card-title-wrap">
@@ -1313,6 +1343,9 @@ textarea { resize: vertical; min-height: 60px; }
           </div>
         </div>
       </div>
+      </div><!-- /left col -->
+      <!-- Right col: list -->
+      <div>
       <div class="card">
         <div class="card-header">
           <div class="card-title-wrap">
@@ -1325,118 +1358,11 @@ textarea { resize: vertical; min-height: 60px; }
           <div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>ยังไม่มีงาน 🐱</div>
         </div>
       </div>
+      </div><!-- /right col -->
     </div>
   </div>
 
 </div><!-- /main -->
-
-<!-- ═══════════════════════════════════════
-     PAGE: DATA LOG (บันทึกข้อมูล)
-═══════════════════════════════════════ -->
-<div class="main" id="main-datalog" style="display:none;margin-left:0">
-  <div class="page active" id="page-datalog">
-    <div class="page-titlebar"><h2>บันทึกข้อมูล</h2></div>
-
-    <div class="tx-desktop-grid">
-    <!-- LEFT: Form + columns -->
-    <div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D4748E" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-            <div class="card-title">เลือกรูปแบบตาราง</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <select id="dlTemplate" onchange="applyDlTemplate()">
-            <option value="custom">— กำหนดเอง —</option>
-            <option value="expense">รายจ่ายประจำวัน</option>
-            <option value="income">รายรับ / เงินเดือน</option>
-            <option value="health">บันทึกสุขภาพ</option>
-            <option value="stock">สต็อกสินค้า</option>
-            <option value="student">บันทึกการเรียน</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9E8A95" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            <div class="card-title">จัดการคอลัมน์</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="form-col">
-            <div class="form-row2">
-              <input type="text" id="dlColName" placeholder="ชื่อคอลัมน์" style="flex:1">
-              <select id="dlColType" style="flex:0.8;min-width:90px" onchange="toggleDlOpts()">
-                <option value="text">ข้อความ</option>
-                <option value="number">ตัวเลข</option>
-                <option value="date">วันที่</option>
-                <option value="select">ตัวเลือก</option>
-              </select>
-            </div>
-            <div id="dlSelectOptsWrap" style="display:none">
-              <input type="text" id="dlSelectOpts" placeholder="ตัวเลือก คั่น, เช่น อาหาร,เดินทาง,อื่นๆ">
-            </div>
-            <button class="btn btn-soft" onclick="addDlColumn()">เพิ่มคอลัมน์</button>
-            <div id="dlColumnsList" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:2px"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D4748E" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-            <div class="card-title">บันทึกแถวใหม่</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="form-col" id="dlFieldsWrap">
-            <div class="empty" style="padding:16px 0;font-size:12px">เพิ่มคอลัมน์ก่อนนะ 🐾</div>
-          </div>
-          <button class="btn btn-rose" style="margin-top:10px" onclick="addDlRow()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-            บันทึกแถวนี้
-          </button>
-        </div>
-      </div>
-    </div><!-- /left -->
-
-    <!-- RIGHT: Table -->
-    <div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9E8A95" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-            <div class="card-title">ข้อมูลที่บันทึก</div>
-          </div>
-          <div style="display:flex;gap:7px;align-items:center">
-            <span class="badge-rose" id="dlRowCount">0</span>
-            <button onclick="exportDlExcel()" id="dlExportBtn" style="display:flex;align-items:center;gap:5px;padding:6px 12px;background:var(--green-bg);border:1.5px solid #C8EDD9;border-radius:9px;font-size:12px;font-family:'Nunito',sans-serif;font-weight:700;color:var(--green);cursor:pointer;white-space:nowrap">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Excel
-            </button>
-            <button onclick="clearDlRows()" style="display:flex;align-items:center;gap:4px;padding:6px 10px;background:var(--red-bg);border:1.5px solid #F0CCCC;border-radius:9px;font-size:12px;font-family:'Nunito',sans-serif;font-weight:700;color:var(--red);cursor:pointer">
-              ล้าง
-            </button>
-          </div>
-        </div>
-        <div class="card-body" style="overflow-x:auto;padding:0">
-          <div id="dlTableWrap">
-            <div class="empty" style="padding:40px 20px">
-              <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg></div>
-              เพิ่มคอลัมน์และบันทึกข้อมูลก่อนนะ 🐾
-            </div>
-          </div>
-        </div>
-      </div>
-    </div><!-- /right -->
-    </div><!-- /grid -->
-  </div>
-</div><!-- /main-datalog -->
 
 <!-- SIDEBAR NAV -->
 <div class="sidebar">
@@ -1498,12 +1424,6 @@ textarea { resize: vertical; min-height: 60px; }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       </span>
       <span class="nav-label">แผนงาน</span>
-    </button>
-    <button class="nav-item" onclick="showPage('datalog',this)">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-      </span>
-      <span class="nav-label">บันทึกข้อมูล</span>
     </button>
   </div>
 
@@ -1615,7 +1535,7 @@ const COLORS=['#E8A0B0','#E07070','#B899E8','#6DBF9E','#E8A870','#70A8E0','#E8C8
 const fm=n=>'฿'+Number(n).toLocaleString('th-TH',{minimumFractionDigits:0,maximumFractionDigits:0});
 const dk=d=>d.toISOString().split('T')[0];
 const today=()=>dk(new Date());
-const fd=s=>{if(!s)return '';const [y,m,d]=s.split('-').map(Number);return `${d} ${MTH[m-1]} ${y+543}`;};
+const fd=s=>{if(!s)return '';const d=new Date(s);return `${d.getDate()} ${MTH[d.getMonth()]} ${d.getFullYear()+543}`;};
 
 let toastTimer;
 function showToast(msg,type='success'){
@@ -1634,7 +1554,7 @@ function openBudgetModal(){
   setTimeout(()=>document.getElementById('budgetInput').focus(),300);
 }
 function closeBudgetModal(e){
-  if(e&&e.target&&e.target!==document.getElementById('budgetModal'))return;
+  if(e&&e.target!==document.getElementById('budgetModal'))return;
   document.getElementById('budgetModal').classList.remove('show');
 }
 function confirmBudget(){
@@ -1708,7 +1628,7 @@ function renderTransactions(){
   let txs=S.transactions.filter(t=>!fv||t.cat===fv);
   const allCats=[...new Set(S.transactions.map(t=>t.cat))];
   const fe=document.getElementById('filterCat');
-  if(fe){const cv=fe.value;fe.innerHTML='<option value="">ทุกหมวด</option>'+allCats.map(c=>`<option value="${c}"${c===cv?' selected':''}>${c}</option>`).join('');}
+  if(fe){const cv=fe.value;fe.innerHTML='<option value="">ทุกหมวด</option>'+allCats.map(c=>`<option${c===cv?' selected':''}>${c}</option>`).join('');}
   const list=document.getElementById('txList');
   if(!txs.length){list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>ยังไม่มีรายการ 🐾</div>`;return;}
   list.innerHTML=txs.map(t=>`
@@ -1830,46 +1750,6 @@ function renderWorkList(){
 function togWork(id){const w=S.works.find(w=>w.id===id);if(w){w.done=!w.done;renderWorkList();window._autoSave();}}
 function confirmDelWork(id){openConfirmModal('ลบงานนี้?','งานนี้จะถูกลบออกจากรายการ',()=>{S.works=S.works.filter(w=>w.id!==id);renderWorkList();window._autoSave();showToast('ลบงานแล้ว');});}
 function changeMonth(){renderOverview();}
-
-function exportToExcel(){
-  if(!S.transactions.length&&!S.fixedCosts.length){showToast('ไม่มีข้อมูลสำหรับส่งออก','error');return;}
-  if(typeof XLSX==='undefined'){showToast('กำลังโหลด SheetJS...','error');return;}
-  const wb=XLSX.utils.book_new();
-  // Sheet 1: Transactions
-  const txH=['วันที่','ประเภท','ชื่อรายการ','หมวดหมู่','จำนวนเงิน (บาท)','โน้ต'];
-  const txR=S.transactions.map(t=>[t.date,t.type==='income'?'รายรับ':'รายจ่าย',t.name,t.cat,t.type==='income'?t.amount:-t.amount,t.note||'']);
-  const lastRow=txR.length+1;
-  const txSheet=XLSX.utils.aoa_to_sheet([txH,...txR,[],
-    ['','','','รายรับรวม','=SUMIF(B2:B'+lastRow+',"รายรับ",E2:E'+lastRow+')',''],
-    ['','','','รายจ่ายรวม','=ABS(SUMIF(B2:B'+lastRow+',"รายจ่าย",E2:E'+lastRow+'))',''],
-    ['','','','คงเหลือสุทธิ','=E'+(lastRow+2)+'+E'+(lastRow+3),'']
-  ]);
-  txSheet['!cols']=[{wch:14},{wch:10},{wch:28},{wch:16},{wch:18},{wch:24}];
-  XLSX.utils.book_append_sheet(wb,txSheet,'รายรับ-รายจ่าย');
-  // Sheet 2: Fixed Costs
-  if(S.fixedCosts.length){
-    const fcR=S.fixedCosts.map(f=>[f.name,f.cat,f.amount,f.day]);
-    const fcSheet=XLSX.utils.aoa_to_sheet([['ชื่อ','หมวดหมู่','จำนวนเงิน (บาท)','วันที่จ่ายทุกเดือน'],...fcR,
-      [],['','รวม Fixed Cost/เดือน','=SUM(C2:C'+(fcR.length+1)+')','']
-    ]);
-    fcSheet['!cols']=[{wch:28},{wch:22},{wch:20},{wch:20}];
-    XLSX.utils.book_append_sheet(wb,fcSheet,'Fixed Cost');
-  }
-  // Sheet 3: Category Summary
-  const catMap={};
-  S.transactions.filter(t=>t.type==='expense').forEach(t=>{catMap[t.cat]=(catMap[t.cat]||0)+t.amount;});
-  if(Object.keys(catMap).length){
-    const catR=Object.entries(catMap).sort((a,b)=>b[1]-a[1]).map(([c,a])=>[c,a]);
-    const catSheet=XLSX.utils.aoa_to_sheet([['หมวดหมู่','ยอดรายจ่าย (บาท)'],...catR,
-      [],['รวม','=SUM(B2:B'+(catR.length+1)+')']
-    ]);
-    catSheet['!cols']=[{wch:20},{wch:22}];
-    XLSX.utils.book_append_sheet(wb,catSheet,'สรุปตามหมวด');
-  }
-  const now=new Date();
-  XLSX.writeFile(wb,'MochiFinance_'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'.xlsx');
-  showToast('ส่งออก Excel เรียบร้อย 🐾');
-}
 
 renderCatChips();renderFixedCosts();renderDailyView();
 renderWeeklyView();renderMonthlyView();renderOverview();
