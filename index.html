@@ -156,46 +156,8 @@ body {
 }
 
 /* ══════════════════════════════════════
-   TOPBAR — sticker card style
+   SHARED — Firebase status pill
 ══════════════════════════════════════ */
-.topbar {
-  background: var(--surface);
-  padding: 10px 18px 10px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-  border-bottom: 2px solid var(--border);
-  box-shadow: 0 2px 12px rgba(180,100,120,0.07);
-}
-.topbar-brand { display: flex; align-items: center; gap: 10px; }
-.topbar-cat-icon {
-  width: 44px; height: 44px; border-radius: 14px;
-  background: var(--blush-mist);
-  display: flex; align-items: center; justify-content: center;
-  border: 2px solid var(--border);
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(180,100,120,0.13);
-}
-.topbar-title {
-  font-family: 'Nunito', sans-serif; font-size: 19px; font-weight: 800;
-  color: var(--ink); letter-spacing: -0.5px;
-  line-height: 1;
-}
-.topbar-title span { color: var(--rose); }
-.topbar-sub {
-  font-size: 10px; color: var(--ink-soft); font-family: 'Nunito', sans-serif;
-  font-weight: 500; letter-spacing: 0.3px; margin-top: 1px;
-}
-.month-pill {
-  background: var(--blush-mist); border: 2px solid var(--border);
-  color: var(--ink-mid); padding: 7px 14px; border-radius: 22px;
-  font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 700;
-  cursor: pointer; outline: none; appearance: none;
-  box-shadow: var(--sh-sm);
-  transition: all 0.18s;
-}
-.month-pill:hover { border-color: var(--blush-dark); }
-
-/* Firebase sync indicator */
 .fb-status {
   display: flex; align-items: center; gap: 5px;
   font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 700;
@@ -205,8 +167,7 @@ body {
 }
 .fb-status .fb-dot {
   width: 7px; height: 7px; border-radius: 50%;
-  background: var(--ink-soft); transition: background 0.4s;
-  flex-shrink: 0;
+  background: var(--ink-soft); transition: background 0.4s; flex-shrink: 0;
 }
 .fb-status.synced { color: var(--green); border-color: #C8EDD9; background: var(--green-bg); }
 .fb-status.synced .fb-dot { background: var(--green); box-shadow: 0 0 5px rgba(94,173,138,0.5); }
@@ -216,85 +177,175 @@ body {
 .fb-status.error .fb-dot { background: var(--red); }
 @keyframes fbpulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-/* ══════════════════════════════════════
-   APP SHELL — base (iPhone)
-══════════════════════════════════════ */
-.app-shell { display: flex; min-height: 100vh; flex-direction: column; }
+.month-pill {
+  background: var(--blush-mist); border: 2px solid var(--border);
+  color: var(--ink-mid); padding: 7px 14px; border-radius: 22px;
+  font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 700;
+  cursor: pointer; outline: none; appearance: none;
+  box-shadow: var(--sh-sm); transition: all 0.18s;
+}
+.month-pill:hover { border-color: var(--blush-dark); }
 
-/* ── TOPBAR (iPhone + iPad) ── */
+/* ══════════════════════════════════════
+   APP SHELL
+══════════════════════════════════════ */
+.app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+.page { display: none; }
+.page.active { display: block; }
+.page-titlebar { display: none; }
+
+/* ══════════════════════════════════════
+   ── TOPBAR (all screens) ──
+══════════════════════════════════════ */
 .topbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 300;
   background: var(--surface);
-  padding: 0 18px;
-  height: 64px;
+  height: 60px; padding: 0 16px;
   display: flex; align-items: center; justify-content: space-between;
   border-bottom: 2px solid var(--border);
   box-shadow: 0 2px 12px rgba(180,100,120,0.07);
 }
+.topbar-brand { display: flex; align-items: center; gap: 10px; }
+.topbar-title {
+  font-family: 'Nunito', sans-serif; font-size: 18px; font-weight: 800;
+  color: var(--ink); letter-spacing: -0.5px; line-height: 1;
+}
+.topbar-title span { color: var(--rose); }
+.topbar-sub { font-size: 10px; color: var(--ink-soft); font-weight: 500; margin-top: 1px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
 
-/* ── BOTTOM NAV (iPhone + iPad) ── */
-.sidebar {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-  background: var(--surface);
+/* ── Hamburger button (mobile only) ── */
+.hamburger-btn {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--blush-mist); border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.18s; flex-shrink: 0;
+}
+.hamburger-btn:active { background: var(--blush); }
+
+/* ── Top nav tabs (tablet+) — hidden on mobile ── */
+.topnav-tabs {
+  display: none;
+  align-items: center; gap: 4px;
+}
+.topnav-tab {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 14px; border-radius: 12px; border: 2px solid transparent;
+  background: transparent; cursor: pointer; transition: all 0.2s;
+  font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700;
+  color: var(--ink-soft);
+}
+.topnav-tab .nav-icon { width: 18px; height: 18px; flex-shrink: 0; }
+.topnav-tab.active {
+  color: var(--rose); background: var(--blush-mist);
+  border-color: var(--border);
+  box-shadow: 0 2px 8px rgba(180,80,110,0.10);
+}
+.topnav-tab:hover:not(.active) { background: var(--blush-bg); color: var(--ink-mid); }
+
+/* ══════════════════════════════════════
+   ── DRAWER (mobile slide-in) ──
+══════════════════════════════════════ */
+.drawer-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(26,17,24,0); backdrop-filter: blur(0px);
+  transition: all 0.28s ease;
+}
+.drawer-overlay.open {
+  display: flex;
+  background: rgba(26,17,24,0.50); backdrop-filter: blur(6px);
+}
+.drawer {
+  width: 260px; height: 100vh; background: var(--surface);
+  border-right: 2px solid var(--border);
+  box-shadow: 4px 0 24px rgba(180,100,120,0.15);
+  display: flex; flex-direction: column;
+  transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+  padding: 0;
+  overflow-y: auto;
+}
+.drawer-overlay.open .drawer { transform: translateX(0); }
+.drawer-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 22px 18px 16px;
+  border-bottom: 2px solid var(--border);
+  background: var(--blush-mist);
+}
+.drawer-logo {
+  width: 40px; height: 40px; border-radius: 13px;
+  background: var(--surface); border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; overflow: hidden;
+}
+.drawer-title {
+  font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 800;
+  color: var(--ink); letter-spacing: -0.4px; line-height: 1;
+}
+.drawer-title span { color: var(--rose); }
+.drawer-sub { font-size: 10px; color: var(--ink-soft); font-weight: 600; margin-top: 2px; }
+.drawer-nav { display: flex; flex-direction: column; gap: 4px; padding: 14px 12px; flex: 1; }
+.drawer-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: 13px; border: none;
+  background: transparent; cursor: pointer; transition: all 0.18s;
+  color: var(--ink-soft); font-family: 'Nunito', sans-serif;
+  font-size: 14px; font-weight: 700; text-align: left;
+}
+.drawer-item .nav-icon { width: 20px; height: 20px; flex-shrink: 0; }
+.drawer-item.active { color: var(--rose); background: var(--blush-mist); }
+.drawer-item:hover:not(.active) { background: var(--blush-bg); color: var(--ink-mid); }
+.drawer-footer {
+  padding: 12px 14px 24px;
   border-top: 2px solid var(--border);
-  display: flex; align-items: center;
-  padding: 0 6px env(safe-area-inset-bottom, 0);
-  height: 66px;
-  box-shadow: 0 -4px 20px rgba(180,100,120,0.10);
+  display: flex; flex-direction: column; gap: 8px;
 }
-.nav-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 3px; padding: 8px 4px;
-  cursor: pointer; border-radius: 16px; transition: all 0.2s;
-  color: var(--ink-soft); border: none; background: transparent;
-}
-.nav-item .nav-icon { width: 22px; height: 22px; }
-.nav-item .nav-label { font-size: 9.5px; font-weight: 700; white-space: nowrap; font-family: 'Nunito', sans-serif; letter-spacing: 0.2px; }
-.nav-item.active { color: var(--rose); background: var(--blush-mist); }
 
-/* ── Hide desktop-only elements on mobile ── */
+/* ══════════════════════════════════════
+   ── SIDEBAR (desktop only — hidden mobile/tablet) ──
+   Keep structure for sidebar-brand etc. but hide
+══════════════════════════════════════ */
+.sidebar { display: none; }
 .sidebar-brand { display: none; }
 .sidebar-fb-wrap { display: none; }
 .sidebar-month-wrap { display: none; }
-.nav-items-wrap { display: contents; }
-.page-titlebar { display: none; }
-
-/* ── MAIN (iPhone) ── */
-.main { padding: 66px 15px 90px; flex: 1; min-width: 0; }
-.page { display: none; }
-.page.active { display: block; }
+.nav-items-wrap { display: none; }
+/* nav-item inside drawer uses .drawer-item */
+.nav-item { display: none; }
 
 /* ══════════════════════════════════════
-   📱 iPAD  (768px – 1179px)
-   Bottom nav + centered 2-col content
+   ── MAIN ──
 ══════════════════════════════════════ */
-@media (min-width: 768px) and (max-width: 1179px) {
+.main {
+  padding: 72px 14px 28px;
+  flex: 1; min-width: 0;
+}
 
-  /* Topbar bigger */
-  .topbar { padding: 13px 28px; }
-  .topbar-title { font-size: 21px; }
-  .month-pill { font-size: 13px; padding: 9px 18px; }
+/* ══════════════════════════════════════
+   📱 MOBILE  (<768px)
+   Hamburger + Drawer
+══════════════════════════════════════ */
+/* defaults above cover mobile */
 
-  /* Bottom nav — taller touch targets */
-  .sidebar { height: 76px; padding: 0 20px env(safe-area-inset-bottom, 0); }
-  .nav-item { gap: 5px; padding: 10px 12px; border-radius: 18px; }
-  .nav-item .nav-icon { width: 26px; height: 26px; }
-  .nav-item .nav-label { font-size: 11px; }
+/* ══════════════════════════════════════
+   📟 TABLET  (768px – 1179px)
+   Top nav tabs, no drawer, 2-col content
+══════════════════════════════════════ */
+@media (min-width: 768px) {
 
-  /* Main — centered max-width */
+  .hamburger-btn { display: none; }
+  .topnav-tabs { display: flex; }
+
+  .topbar { height: 64px; padding: 0 24px; }
+  .topbar-title { font-size: 20px; }
+
   .main {
-    padding: 68px 28px 106px;
-    max-width: 980px;
+    padding: 76px 24px 36px;
+    max-width: 1060px;
     margin-left: auto; margin-right: auto; width: 100%;
   }
 
-  /* Hero */
-  .hero-card { padding: 28px 28px 22px; margin-bottom: 20px; }
-  .hero-amount { font-size: 46px; }
-  .hero-stat-icon { width: 44px; height: 44px; }
-  .hero-stat-val { font-size: 17px; }
-
-  /* Overview — hero full-width, cards 2-col */
+  /* 2-col grids */
   .desktop-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -302,47 +353,93 @@ body {
   }
   .desktop-col-full { grid-column: 1 / -1; }
 
-  /* Transaction — form | list */
   .tx-desktop-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 18px; align-items: start;
   }
-
-  /* Fixed Cost — form | list */
   .fc-desktop-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 18px; align-items: start;
   }
 
-  /* Planner tabs centered */
-  .ptabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-  .ptab { padding: 10px 26px !important; font-size: 13px !important; border-radius: 22px !important; }
-
-  /* Daily: day-nav full-width, then 2-col */
+  /* Daily planner: 2-col */
   #pv-daily { display: none; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
   #pv-daily.on { display: grid; }
   #pv-daily .day-nav { grid-column: 1 / -1; }
 
-  /* Weekly / Monthly / Work — single centered col */
-  #pv-weekly, #pv-monthly, #pv-work {
-    max-width: 700px; margin-left: auto; margin-right: auto;
+  /* Work: 2-col */
+  #pv-work { display: none; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+  #pv-work.on { display: grid; }
+
+  .ptabs { justify-content: flex-start; gap: 8px; margin-bottom: 18px; }
+  .ptab { padding: 9px 22px !important; font-size: 13px !important; }
+
+  .card { margin-bottom: 18px; border-radius: 22px; }
+  .card-header { padding: 15px 20px; }
+  .card-body { padding: 17px 20px; }
+  .card-title { font-size: 14px; }
+  .btn { padding: 14px 20px; font-size: 14px; }
+  input, select, textarea { padding: 13px 15px; font-size: 14px; border-radius: 13px; }
+  .hero-amount { font-size: 44px; }
+  .hero-stat-icon { width: 42px; height: 42px; }
+  .page-titlebar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .page-titlebar h2 {
+    font-family: 'Nunito', sans-serif; font-size: 22px; font-weight: 800;
+    color: var(--ink); letter-spacing: -0.4px;
+  }
+}
+
+/* ══════════════════════════════════════
+   🖥️  DESKTOP  (≥1180px)
+   Wider top nav, 3-col dashboard grid
+══════════════════════════════════════ */
+@media (min-width: 1180px) {
+
+  .topbar { height: 68px; padding: 0 40px; }
+  .topbar-title { font-size: 22px; }
+  .topnav-tab { padding: 9px 18px; font-size: 14px; gap: 8px; }
+  .topnav-tab .nav-icon { width: 20px; height: 20px; }
+
+  .main {
+    padding: 84px 40px 48px;
+    max-width: 1400px;
+    margin-left: auto; margin-right: auto; width: 100%;
   }
 
-  /* Cards */
-  .card { margin-bottom: 18px; border-radius: 22px; }
-  .card-header { padding: 16px 20px; }
+  /* 3-col overview grid */
+  .desktop-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 22px;
+  }
+
+  .tx-desktop-grid {
+    grid-template-columns: 420px 1fr;
+    gap: 22px;
+  }
+  .fc-desktop-grid {
+    grid-template-columns: 380px 1fr;
+    gap: 22px;
+  }
+
+  #pv-daily { grid-template-columns: 400px 1fr; gap: 22px; }
+  #pv-work { grid-template-columns: 380px 1fr; gap: 22px; }
+
+  .hero-card { padding: 32px 36px 26px; margin-bottom: 22px; }
+  .hero-amount { font-size: 54px; }
+  .card { margin-bottom: 22px; }
+  .card-header { padding: 16px 22px; }
+  .card-body { padding: 20px 22px; }
   .card-title { font-size: 15px; }
-  .card-body { padding: 18px 20px; }
-
-  /* Forms */
-  input, select, textarea { padding: 14px 16px; font-size: 15px; border-radius: 14px; }
-  .form-col { gap: 13px; }
-  .form-row2 { gap: 10px; }
-
-  /* Buttons */
-  .btn { padding: 15px 22px; font-size: 14px; border-radius: 14px; }
+  .btn { padding: 14px 22px; font-size: 14px; }
+  .page-titlebar { margin-bottom: 24px; }
+  .page-titlebar h2 { font-size: 26px; }
+  .ptabs { gap: 10px; }
+  .ptab { padding: 10px 28px !important; font-size: 14px !important; }
   .btn-sm { padding: 9px 18px; font-size: 13px; }
   .btn-ghost { padding: 8px 12px; border-radius: 11px; }
 
@@ -370,162 +467,6 @@ body {
   .toast { min-width: 220px; font-size: 14px; padding: 14px 20px; }
 }
 
-/* ══════════════════════════════════════
-   🖥️  PC / Desktop  (≥1180px)
-   Left sidebar + wide content area
-══════════════════════════════════════ */
-@media (min-width: 1180px) {
-
-  /* Hide mobile topbar — sidebar has brand */
-  .topbar { display: none; }
-
-  /* App shell = row */
-  .app-shell { flex-direction: row; }
-
-  /* ── LEFT SIDEBAR ── */
-  .sidebar {
-    position: fixed; top: 0; left: 0; bottom: 0; right: auto;
-    width: 240px; height: 100vh;
-    flex-direction: column; align-items: stretch; justify-content: flex-start;
-    border-top: none; border-right: 2px solid var(--border);
-    box-shadow: 2px 0 16px rgba(180,100,120,0.08);
-    padding: 0; overflow-y: auto;
-  }
-
-  /* Brand inside sidebar */
-  .sidebar-brand {
-    display: flex !important;
-    align-items: center; gap: 10px;
-    padding: 24px 20px 16px;
-    border-bottom: 2px solid var(--border);
-  }
-  .sidebar-logo {
-    width: 42px; height: 42px; border-radius: 14px;
-    background: var(--blush-mist); border: 2px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; overflow: hidden;
-  }
-  .sidebar-title {
-    font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
-    color: var(--ink); letter-spacing: -0.5px; line-height: 1;
-  }
-  .sidebar-title span { color: var(--rose); }
-  .sidebar-sub { font-size: 10px; color: var(--ink-soft); font-weight: 600; letter-spacing: 0.3px; margin-top: 2px; }
-
-  /* Month picker in sidebar */
-  .sidebar-month-wrap {
-    display: flex !important;
-    padding: 10px 14px 4px;
-  }
-  .sidebar-month-wrap .month-pill { width: 100%; text-align: center; }
-
-  /* Nav items — vertical list */
-  .nav-items-wrap {
-    display: flex !important;
-    flex-direction: column;
-    gap: 4px; padding: 14px 12px; flex: 1;
-  }
-  .nav-item {
-    flex: none; flex-direction: row;
-    justify-content: flex-start; gap: 12px;
-    padding: 12px 16px; border-radius: 14px;
-  }
-  .nav-item .nav-icon { width: 20px; height: 20px; flex-shrink: 0; }
-  .nav-item .nav-label { font-size: 13px; font-weight: 700; }
-  .nav-item.active { background: var(--blush-mist); box-shadow: 0 2px 8px rgba(180,80,110,0.12); }
-
-  /* Firebase status at bottom of sidebar */
-  .sidebar-fb-wrap {
-    display: flex !important;
-    padding: 12px 14px 24px;
-    border-top: 2px solid var(--border);
-  }
-  .sidebar-fb-wrap .fb-status { font-size: 11px; }
-
-  /* ── MAIN — offset by sidebar, wide content ── */
-  .main {
-    margin-left: 240px;
-    padding: 36px 40px 48px;
-    max-width: none;
-    width: calc(100% - 240px);
-  }
-
-  /* Page title bar shows on desktop */
-  .page-titlebar {
-    display: flex !important;
-    align-items: center; justify-content: space-between;
-    margin-bottom: 24px;
-  }
-  .page-titlebar h2 {
-    font-family: 'Nunito', sans-serif; font-size: 24px; font-weight: 800;
-    color: var(--ink); letter-spacing: -0.5px;
-  }
-
-  /* Hero */
-  .hero-card { padding: 32px 32px 26px; margin-bottom: 22px; }
-  .hero-amount { font-size: 52px; }
-
-  /* Overview — hero full-width, 3-col cards */
-  .desktop-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px; align-items: start;
-  }
-  .desktop-col-full { grid-column: 1 / -1; }
-
-  /* Transaction — fixed form width | list */
-  .tx-desktop-grid {
-    display: grid;
-    grid-template-columns: 400px 1fr;
-    gap: 20px; align-items: start;
-  }
-
-  /* Fixed Cost — fixed form width | list */
-  .fc-desktop-grid {
-    display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 20px; align-items: start;
-  }
-
-  /* Planner tabs */
-  .ptabs { display: flex; gap: 10px; margin-bottom: 22px; }
-  .ptab { padding: 10px 28px !important; font-size: 13px !important; border-radius: 22px !important; }
-
-  /* Daily: 2-col */
-  #pv-daily { display: none; grid-template-columns: 400px 1fr; gap: 20px; align-items: start; }
-  #pv-daily.on { display: grid; }
-  #pv-daily .day-nav { grid-column: 1 / -1; }
-
-  /* Weekly / Monthly: 2-col (calendar | tasks) */
-  #pv-weekly, #pv-monthly { max-width: none; }
-
-  /* Work: form | list */
-  #pv-work {
-    max-width: none;
-    display: none;
-    grid-template-columns: 380px 1fr;
-    gap: 20px; align-items: start;
-  }
-  #pv-work.on { display: grid; }
-
-  /* Cards */
-  .card { margin-bottom: 20px; }
-  .card-header { padding: 14px 20px; }
-  .card-body { padding: 18px 20px; }
-
-  /* Forms */
-  input, select, textarea { padding: 12px 14px; font-size: 14px; }
-  .form-col { gap: 12px; }
-
-  /* Buttons */
-  .btn { padding: 13px 22px; font-size: 14px; }
-
-  /* Tx items */
-  .tx-icon { width: 44px; height: 44px; }
-  .tx-name { font-size: 14px; }
-
-  .toast { min-width: 240px; }
-}
 
 /* ══════════════════════════════════════
    HERO CARD — sticker-inspired
@@ -961,16 +902,41 @@ textarea { resize: vertical; min-height: 60px; }
 <body>
 <div class="app-shell">
 
-<!-- TOPBAR (mobile only) -->
+<!-- TOPBAR -->
 <div class="topbar">
   <div class="topbar-brand">
+    <!-- Hamburger (mobile only) -->
+    <button class="hamburger-btn" onclick="openDrawer()" aria-label="เมนู">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rose)" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <div>
       <div class="topbar-title">Mochi <span>Finance</span></div>
       <div class="topbar-sub">บัญชีรายรับ-รายจ่าย 🐾</div>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px">
-    <div class="fb-status" id="fbStatus" title="Firebase Sync">
+
+  <!-- Top nav tabs (tablet+) -->
+  <nav class="topnav-tabs">
+    <button class="topnav-tab active" onclick="showPage('overview',this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
+      ภาพรวม
+    </button>
+    <button class="topnav-tab" onclick="showPage('transactions',this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
+      รายการ
+    </button>
+    <button class="topnav-tab" onclick="showPage('fixcost',this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="17" rx="5" ry="4"/><ellipse cx="7" cy="12" rx="2.2" ry="2.8"/><ellipse cx="17" cy="12" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="8" rx="1.8" ry="2.2"/><ellipse cx="14.5" cy="8" rx="1.8" ry="2.2"/></svg></span>
+      Fixed Cost
+    </button>
+    <button class="topnav-tab" onclick="showPage('planner',this)">
+      <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+      แผนงาน
+    </button>
+  </nav>
+
+  <div class="topbar-right">
+    <div class="fb-status" id="fbStatus">
       <div class="fb-dot"></div>
       <span id="fbStatusText">กำลังเชื่อม...</span>
     </div>
@@ -983,23 +949,66 @@ textarea { resize: vertical; min-height: 60px; }
   </div>
 </div>
 
+<!-- MOBILE DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer(event)">
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div class="drawer-logo">
+        <svg width="24" height="24" viewBox="0 0 100 100" fill="none">
+          <ellipse cx="50" cy="62" rx="30" ry="24" fill="#F2C4CE" stroke="#1A1118" stroke-width="5"/>
+          <ellipse cx="28" cy="44" rx="14" ry="18" fill="#F2C4CE" stroke="#1A1118" stroke-width="5"/>
+          <ellipse cx="72" cy="44" rx="14" ry="18" fill="#F2C4CE" stroke="#1A1118" stroke-width="5"/>
+          <ellipse cx="38" cy="28" rx="11" ry="14" fill="#F2C4CE" stroke="#1A1118" stroke-width="4"/>
+          <ellipse cx="62" cy="28" rx="11" ry="14" fill="#F2C4CE" stroke="#1A1118" stroke-width="4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="drawer-title">Mochi <span>Finance</span></div>
+        <div class="drawer-sub">บัญชีรายรับ-รายจ่าย 🐾</div>
+      </div>
+    </div>
+    <nav class="drawer-nav">
+      <button class="drawer-item active" onclick="showPage('overview',null);closeDrawer()">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
+        ภาพรวม
+      </button>
+      <button class="drawer-item" onclick="showPage('transactions',null);closeDrawer()">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
+        รายการรายรับ-รายจ่าย
+      </button>
+      <button class="drawer-item" onclick="showPage('fixcost',null);closeDrawer()">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="17" rx="5" ry="4"/><ellipse cx="7" cy="12" rx="2.2" ry="2.8"/><ellipse cx="17" cy="12" rx="2.2" ry="2.8"/><ellipse cx="9.5" cy="8" rx="1.8" ry="2.2"/><ellipse cx="14.5" cy="8" rx="1.8" ry="2.2"/></svg></span>
+        Fixed Cost
+      </button>
+      <button class="drawer-item" onclick="showPage('planner',null);closeDrawer()">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+        แผนงาน
+      </button>
+    </nav>
+    <div class="drawer-footer">
+      <div class="fb-status" id="fbStatus2" style="width:100%;justify-content:center">
+        <div class="fb-dot"></div>
+        <span id="fbStatusText2">กำลังเชื่อม...</span>
+      </div>
+      <select class="month-pill" style="width:100%;text-align:center" onchange="changeMonth()">
+        <option value="5">มิ.ย. 68</option>
+        <option value="4">พ.ค. 68</option>
+        <option value="3">เม.ย. 68</option>
+        <option value="2">มี.ค. 68</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+
 <!-- MAIN -->
 <div class="main">
 
   <!-- PAGE: OVERVIEW -->
   <div class="page active" id="page-overview">
-    <!-- Page title (desktop only) -->
     <div class="page-titlebar">
       <h2>ภาพรวม</h2>
-      <div style="display:flex;align-items:center;gap:10px">
-        <select class="month-pill" onchange="changeMonth()" id="monthSelectDesktop">
-          <option value="5">มิ.ย. 68</option>
-          <option value="4">พ.ค. 68</option>
-          <option value="3">มี.ค. 68</option>
-          <option value="2">ก.พ. 68</option>
-        </select>
-        <button class="btn btn-sm btn-rose" onclick="openBudgetModal()" style="width:auto">ตั้งงบ</button>
-      </div>
+      <button class="btn btn-sm btn-rose" onclick="openBudgetModal()" style="width:auto">ตั้งงบ</button>
     </div>
 
     <div class="desktop-grid">
@@ -1365,77 +1374,8 @@ textarea { resize: vertical; min-height: 60px; }
 
 </div><!-- /main -->
 
-<!-- SIDEBAR NAV -->
-<div class="sidebar">
-  <!-- Brand (visible on tablet/desktop) -->
-  <div class="sidebar-brand">
-    <div class="sidebar-logo">
-      <svg width="26" height="26" viewBox="0 0 100 100" fill="none">
-        <ellipse cx="50" cy="62" rx="30" ry="24" fill="#F2C4CE" stroke="#1A1118" stroke-width="5"/>
-        <ellipse cx="28" cy="44" rx="14" ry="18" fill="#F2C4CE" stroke="#1A1118" stroke-width="5"/>
-        <ellipse cx="72" cy="44" rx="14" ry="18" fill="#F2C4CE" stroke="#1A1118" stroke-width="5"/>
-        <ellipse cx="38" cy="28" rx="11" ry="14" fill="#F2C4CE" stroke="#1A1118" stroke-width="4"/>
-        <ellipse cx="62" cy="28" rx="11" ry="14" fill="#F2C4CE" stroke="#1A1118" stroke-width="4"/>
-      </svg>
-    </div>
-    <div>
-      <div class="sidebar-title">Mochi <span>Finance</span></div>
-      <div class="sidebar-sub">บัญชีรายรับ-รายจ่าย 🐾</div>
-    </div>
-  </div>
 
-  <!-- Month picker (tablet/desktop only) -->
-  <div class="sidebar-month-wrap">
-    <select class="month-pill" style="width:100%" onchange="changeMonth()">
-      <option value="5">มิ.ย. 68</option>
-      <option value="4">พ.ค. 68</option>
-      <option value="3">เม.ย. 68</option>
-      <option value="2">มี.ค. 68</option>
-    </select>
-  </div>
 
-  <!-- Nav items -->
-  <div class="nav-items-wrap">
-    <button class="nav-item active" onclick="showPage('overview',this)">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-      </span>
-      <span class="nav-label">ภาพรวม</span>
-    </button>
-    <button class="nav-item" onclick="showPage('transactions',this)">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-      </span>
-      <span class="nav-label">รายการ</span>
-    </button>
-    <button class="nav-item" onclick="showPage('fixcost',this)">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-          <ellipse cx="12" cy="17" rx="5" ry="4"/>
-          <ellipse cx="7" cy="12" rx="2.2" ry="2.8"/>
-          <ellipse cx="17" cy="12" rx="2.2" ry="2.8"/>
-          <ellipse cx="9.5" cy="8" rx="1.8" ry="2.2"/>
-          <ellipse cx="14.5" cy="8" rx="1.8" ry="2.2"/>
-        </svg>
-      </span>
-      <span class="nav-label">Fixed Cost</span>
-    </button>
-    <button class="nav-item" onclick="showPage('planner',this)">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      </span>
-      <span class="nav-label">แผนงาน</span>
-    </button>
-  </div>
-
-  <!-- Firebase status (tablet/desktop only) -->
-  <div class="sidebar-fb-wrap">
-    <div class="fb-status" id="fbStatus2" style="width:100%;justify-content:center">
-      <div class="fb-dot"></div>
-      <span id="fbStatusText2">กำลังเชื่อม...</span>
-    </div>
-  </div>
-</div>
 
 <!-- BUDGET MODAL -->
 <div class="modal-overlay" id="budgetModal" onclick="closeBudgetModal(event)">
@@ -1483,15 +1423,15 @@ window._appReady = false;
 
 // ── Firebase status UI ─────────────────────────────────────────
 window._fbStatus = function(state) {
-  const el = document.getElementById('fbStatus');
-  const txt = document.getElementById('fbStatusText');
-  const el2 = document.getElementById('fbStatus2');
-  const txt2 = document.getElementById('fbStatusText2');
   const label = state === 'synced' ? 'ซิงค์แล้ว' : state === 'saving' ? 'กำลังบันทึก...' : 'ออฟไลน์';
-  if (el) { el.className = 'fb-status ' + state; }
-  if (txt) txt.textContent = label;
-  if (el2) { el2.className = 'fb-status ' + state; }
-  if (txt2) txt2.textContent = label;
+  ['fbStatus','fbStatus2'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.className='fb-status '+state;
+  });
+  ['fbStatusText','fbStatusText2'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent=label;
+  });
 };
 
 // ── Auto-save wrapper ──────────────────────────────────────────
@@ -1582,11 +1522,32 @@ function closeConfirmModal(e){
   document.getElementById('confirmModal').classList.remove('show');
 }
 
+function openDrawer(){
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeDrawer(e){
+  if(e&&e.target!==document.getElementById('drawerOverlay'))return;
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
 function showPage(page,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  if(btn)btn.classList.add('active');
+  // sync topnav tabs
+  document.querySelectorAll('.topnav-tab').forEach(t=>t.classList.remove('active'));
+  // sync drawer items
+  document.querySelectorAll('.drawer-item').forEach(t=>t.classList.remove('active'));
+  if(btn){
+    btn.classList.add('active');
+  } else {
+    // highlight by page name
+    const pages=['overview','transactions','fixcost','planner'];
+    const idx=pages.indexOf(page);
+    document.querySelectorAll('.topnav-tab')[idx]?.classList.add('active');
+    document.querySelectorAll('.drawer-item')[idx]?.classList.add('active');
+  }
   if(page==='overview')renderOverview();
   if(page==='transactions')renderTransactions();
   if(page==='fixcost')renderFixedCosts();
