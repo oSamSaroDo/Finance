@@ -104,6 +104,8 @@
     window._fbStatus('error');
   });
 </script>
+<!-- SheetJS for Excel export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Prompt:wght@300;400;500;600;700&display=swap');
@@ -1022,9 +1024,15 @@ textarea { resize: vertical; min-height: 60px; }
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9E8A95" stroke-width="2.5" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           <div class="card-title">รายการทั้งหมด</div>
         </div>
-        <select id="filterCat" onchange="renderTransactions()" style="width:auto;font-size:12px;padding:5px 10px;background:var(--blush-bg);border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito',sans-serif;font-weight:600;color:var(--ink-mid)">
-          <option value="">ทุกหมวด</option>
-        </select>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="filterCat" onchange="renderTransactions()" style="width:auto;font-size:12px;padding:5px 10px;background:var(--blush-bg);border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito',sans-serif;font-weight:600;color:var(--ink-mid)">
+            <option value="">ทุกหมวด</option>
+          </select>
+          <button onclick="exportToExcel()" style="display:flex;align-items:center;gap:5px;padding:6px 12px;background:var(--green-bg);border:1.5px solid #C8EDD9;border-radius:9px;font-size:12px;font-family:'Nunito',sans-serif;font-weight:700;color:var(--green);cursor:pointer;white-space:nowrap;transition:all 0.15s" onmouseover="this.style.background='#d4f0e4'" onmouseout="this.style.background='var(--green-bg)'">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Excel
+          </button>
+        </div>
       </div>
       <div class="card-body" id="txList">
         <div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>ยังไม่มีรายการ</div>
@@ -1418,7 +1426,7 @@ const COLORS=['#E8A0B0','#E07070','#B899E8','#6DBF9E','#E8A870','#70A8E0','#E8C8
 const fm=n=>'฿'+Number(n).toLocaleString('th-TH',{minimumFractionDigits:0,maximumFractionDigits:0});
 const dk=d=>d.toISOString().split('T')[0];
 const today=()=>dk(new Date());
-const fd=s=>{if(!s)return '';const d=new Date(s);return `${d.getDate()} ${MTH[d.getMonth()]} ${d.getFullYear()+543}`;};
+const fd=s=>{if(!s)return '';const [y,m,d]=s.split('-').map(Number);return `${d} ${MTH[m-1]} ${y+543}`;};
 
 let toastTimer;
 function showToast(msg,type='success'){
@@ -1437,7 +1445,7 @@ function openBudgetModal(){
   setTimeout(()=>document.getElementById('budgetInput').focus(),300);
 }
 function closeBudgetModal(e){
-  if(e&&e.target!==document.getElementById('budgetModal'))return;
+  if(e&&e.target&&e.target!==document.getElementById('budgetModal'))return;
   document.getElementById('budgetModal').classList.remove('show');
 }
 function confirmBudget(){
@@ -1511,7 +1519,7 @@ function renderTransactions(){
   let txs=S.transactions.filter(t=>!fv||t.cat===fv);
   const allCats=[...new Set(S.transactions.map(t=>t.cat))];
   const fe=document.getElementById('filterCat');
-  if(fe){const cv=fe.value;fe.innerHTML='<option value="">ทุกหมวด</option>'+allCats.map(c=>`<option${c===cv?' selected':''}>${c}</option>`).join('');}
+  if(fe){const cv=fe.value;fe.innerHTML='<option value="">ทุกหมวด</option>'+allCats.map(c=>`<option value="${c}"${c===cv?' selected':''}>${c}</option>`).join('');}
   const list=document.getElementById('txList');
   if(!txs.length){list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>ยังไม่มีรายการ 🐾</div>`;return;}
   list.innerHTML=txs.map(t=>`
@@ -1633,6 +1641,46 @@ function renderWorkList(){
 function togWork(id){const w=S.works.find(w=>w.id===id);if(w){w.done=!w.done;renderWorkList();window._autoSave();}}
 function confirmDelWork(id){openConfirmModal('ลบงานนี้?','งานนี้จะถูกลบออกจากรายการ',()=>{S.works=S.works.filter(w=>w.id!==id);renderWorkList();window._autoSave();showToast('ลบงานแล้ว');});}
 function changeMonth(){renderOverview();}
+
+function exportToExcel(){
+  if(!S.transactions.length&&!S.fixedCosts.length){showToast('ไม่มีข้อมูลสำหรับส่งออก','error');return;}
+  if(typeof XLSX==='undefined'){showToast('กำลังโหลด SheetJS...','error');return;}
+  const wb=XLSX.utils.book_new();
+  // Sheet 1: Transactions
+  const txH=['วันที่','ประเภท','ชื่อรายการ','หมวดหมู่','จำนวนเงิน (บาท)','โน้ต'];
+  const txR=S.transactions.map(t=>[t.date,t.type==='income'?'รายรับ':'รายจ่าย',t.name,t.cat,t.type==='income'?t.amount:-t.amount,t.note||'']);
+  const lastRow=txR.length+1;
+  const txSheet=XLSX.utils.aoa_to_sheet([txH,...txR,[],
+    ['','','','รายรับรวม','=SUMIF(B2:B'+lastRow+',"รายรับ",E2:E'+lastRow+')',''],
+    ['','','','รายจ่ายรวม','=ABS(SUMIF(B2:B'+lastRow+',"รายจ่าย",E2:E'+lastRow+'))',''],
+    ['','','','คงเหลือสุทธิ','=E'+(lastRow+2)+'+E'+(lastRow+3),'']
+  ]);
+  txSheet['!cols']=[{wch:14},{wch:10},{wch:28},{wch:16},{wch:18},{wch:24}];
+  XLSX.utils.book_append_sheet(wb,txSheet,'รายรับ-รายจ่าย');
+  // Sheet 2: Fixed Costs
+  if(S.fixedCosts.length){
+    const fcR=S.fixedCosts.map(f=>[f.name,f.cat,f.amount,f.day]);
+    const fcSheet=XLSX.utils.aoa_to_sheet([['ชื่อ','หมวดหมู่','จำนวนเงิน (บาท)','วันที่จ่ายทุกเดือน'],...fcR,
+      [],['','รวม Fixed Cost/เดือน','=SUM(C2:C'+(fcR.length+1)+')','']
+    ]);
+    fcSheet['!cols']=[{wch:28},{wch:22},{wch:20},{wch:20}];
+    XLSX.utils.book_append_sheet(wb,fcSheet,'Fixed Cost');
+  }
+  // Sheet 3: Category Summary
+  const catMap={};
+  S.transactions.filter(t=>t.type==='expense').forEach(t=>{catMap[t.cat]=(catMap[t.cat]||0)+t.amount;});
+  if(Object.keys(catMap).length){
+    const catR=Object.entries(catMap).sort((a,b)=>b[1]-a[1]).map(([c,a])=>[c,a]);
+    const catSheet=XLSX.utils.aoa_to_sheet([['หมวดหมู่','ยอดรายจ่าย (บาท)'],...catR,
+      [],['รวม','=SUM(B2:B'+(catR.length+1)+')']
+    ]);
+    catSheet['!cols']=[{wch:20},{wch:22}];
+    XLSX.utils.book_append_sheet(wb,catSheet,'สรุปตามหมวด');
+  }
+  const now=new Date();
+  XLSX.writeFile(wb,'MochiFinance_'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'.xlsx');
+  showToast('ส่งออก Excel เรียบร้อย 🐾');
+}
 
 renderCatChips();renderFixedCosts();renderDailyView();
 renderWeeklyView();renderMonthlyView();renderOverview();
